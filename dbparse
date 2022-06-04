@@ -1,0 +1,98 @@
+# awk script to parse Adventure database, assumed to be adventure.dat
+
+# Usage:  sh dbparse [ summarize | list | map ]
+#   summarize - number of values of each type describing maze
+#   list - location number and name list, along with short name (if any)
+#   map - text version of maze map giving location numbers and what
+#      motions get you to a new location.
+WHAT=${1:-summarize}
+awk < adventure.dat 'BEGIN{insec=0; nlocs=0; WHAT="'"${WHAT}"'"}
+!insec && $1 ~ /[1234560]$/ { insec = $1; if (insec>0) next; else exit }
+insec && $1 == -1 {
+    if (insec == 1) dollocs() ;
+    if (insec == 2) doslocs() ;
+    if (insec == 3) domotions() ;
+    if (insec == 4) dowords() ;
+    if (insec == 5) docomm() ;
+    if (insec == 6) domsgs() ;
+    insec = 0
+    next
+}
+insec == 1 { n = 0+$1; lloc[n] = lloc[n] " " substr($0,10); next }
+insec == 2 { n = 0+$1; sloc[n] = sloc[n] " " substr($0,10); next }
+insec == 3 { l=0+$1; dest=0+$2; if (l>nlocs) nlocs = l
+    for(i=3; i<=NF; i++) {nm[l] += 1; mot[l,nm[l]] = 0+$(i); dst[l,nm[l]]=dest}
+    next
+}
+insec == 4 { word[$1] = $2; next}
+insec == 5 { comm[$1] = substr($0,10); next}
+insec == 6 { msg[$1] = msg[$1] substr($0,10); next}
+insec > 0 { print "**Bad section number: " insec }
+func dollocs() {
+   nll = n; printf "%d long descriptions\n",nll
+}
+func doslocs() {
+   nsl = n; printf "%d short descriptions\n",nsl
+}
+func domotions() {
+   printf "%d locations\n",nlocs
+}
+func dowords() {
+   n = 0; for(name in word) n += 1;
+   printf "%d words in vocabulary\n",n
+}
+func docomm() {
+   n = 0; for(name in comm) n += 1;
+   printf "%d comments\n",n
+}
+func domsgs() {
+   n = 0; for(name in msg) n += 1;
+   printf "%d messages\n",n
+}
+END{
+    if(WHAT=="summarize") exit
+    if(WHAT=="list") {
+       for(i=1; i<=nll; i++) {
+          if(length(lloc[i])>0) printf "%-3d: %s\n",i,lloc[i]
+          if(length(sloc[i])>0) printf "     (%s)\n",sloc[i]
+       }
+    }
+    if(WHAT=="map") {
+       spec["300"] = "randomly, 6 or 5 (300)";
+       spec["301"] = "depending on grate, 23 or 9 (301)";
+       spec["302"] = "depending on grate, 8 or 9 (302)";
+       spec["303"] = "depending on nugget, 20 or 15 (303)";
+       spec["304"] = "depending on nugget, 22 or 14 (304)";
+       spec["305"] = "die (305)";
+       spec["306"] = "depending on PROP(12), 27 or 31 (306)";
+       spec["307"] = "depending on snake, 28 or 32 (307)";
+       spec["308"] = "depending on snake, 29 or 32 (308)";
+       spec["309"] = "depending on snake, 30 or 32 (309)";
+       spec["310"] = "depending on grate, 8 or 9 (310)";
+       spec["311"] = "randomly, 65 or 68 (311)";
+       spec["312"] = "randomly, 65 or 39 or 70 (312)";
+       spec["313"] = "randomly, 66 or 71 or 72 (313)";
+       spec["314"] = "randomly, 66 or 77 (314)";
+       word[1] = "(automatic go to)"
+       for(i=1; i<=nll; i++) {
+          if (length(sloc[i])>0) m="(" substr(sloc[i],2) ")"
+          else {
+             j=index(lloc[i],".")
+             if (j==0 && length(lloc[i])>60) m=""; else {
+                if (j==0) j=length(lloc[i])
+                m=substr(lloc[i],2,j)
+             }
+          }
+          printf "%3d: %s\n",i,m
+          for(j=1; j<=nm[i]; j++) {
+             if(dst[i,j]>=300)
+                dest=spec["" dst[i,j]]
+             else if (sloc[dst[i,j]] == "")
+                dest=sprintf("%2d",dst[i,j])
+             else 
+                dest=sprintf("%2d %s",dst[i,j],sloc[dst[i,j]])
+             printf "     %-5s -> %s\n",word[mot[i,j]],dest
+          }
+       }
+    }
+}'
