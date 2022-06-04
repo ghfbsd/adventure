@@ -1,12 +1,20 @@
 # adventure
 
-The original Fortran version of Adventure by Will Crowther.
+The original Fortran version of Adventure by Will Crowther, restored to
+functionality when compiled with a modern Fortran compiler.  For a history of
+this program, see the
+[Wikipedia article](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure)
+on it.
 
 Downloaded from Wayback Machine archive of
 
+```
 http://www.icynic.com/~don/jerz/advf4.77-03-31
+```
 and
+```
 http://www.icynic.com/~don/jerz/advdat.77-03-31
+```
 
 # Code changes:
 
