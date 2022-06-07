@@ -35,9 +35,8 @@ http://www.icynic.com/~don/jerz/advdat.77-03-31
   Defined an integer constant BLNK for checking if at end of text by
   equivalencing it to a CHARACTER*4 string of that value.
 
-- Changed G formats to In, added OPEN statement to read data file, and forced
-  BLANK='NULL' so that left-justified integer fields could be read.  The
-  database file is 'adventure.dat' and is located in the executable directory.
+- Changed G formats to I<i>n</i>, added OPEN statement to read data file, and
+  forced BLANK='NULL' so that left-justified integer fields could be read.
 
 - Removed most of the functionality of the GETIN subroutine associated with
   packing of 5 7-bit ASCII chars into a 36 bit word (DEC PDP-10 architecture),
@@ -61,22 +60,37 @@ http://www.icynic.com/~don/jerz/advdat.77-03-31
   to access of element 0 of the DTRAV array.
 
 - Added command line option -loc which prints out location in maze (to help
-  mapping/route finding for the frustrated)
+  mapping/route finding for the frustrated).
 
 # Database changes:
 
-- Eliminated blank line among the location description section, which triggered
+- Eliminated a blank line among the location descriptions, which triggered
   a bug in the main line code (zero array index).
 
 - Replaced tabs with blanks to reformat numeric fields to fixed-length.
 
 - Deleted motion codes 305 in two places, which was a mistake; there is no
-  motion code word of that value, nor do motion codes have any special encoding
+  motion word with that key, nor do motion codes have any special encoding
   schemes like destination codes have.  Seems to have been a problem setting up
   the motion database originally by Will Crowther.
 
+- Fixed typos in some messages.
+
+- Changed action word EXCIV to EXCAV (Crowther probably meant "excavate" because
+  it is a synonym of "dig").
+
+- The CHEST/TREAS/BOX object, probably meant to be a treasure
+  chest, is not put anywhere in the maze, nor does any denizen or action cause
+  it to be dropped or created.  This probably represents a new feature that
+  Crowther didn't fully implement.  (No changes made.)
+
 # Assumptions:
 
-- Built-in function RAN(I) returns a pseudo-random REAL variable 0 <= X <= 1.
-
 - Database must be in the same directory as executable and named adventure.dat.
+
+- Built-in function RAN(I) returns a pseudo-random REAL variable 0 <= X <= 1.
+  (This is a built-in library function in GNU Fortran.)
+
+- Addition of -loc command line option uses GNU Fortran built-in function
+  IARGC() and procedure GETARG(N,VAR) to respectively get number of command
+  line arguments, and command argument N's text as character string VAR.
