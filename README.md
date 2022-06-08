@@ -26,7 +26,7 @@ http://www.icynic.com/~don/jerz/advdat.77-03-31
 - Apparently, the DEC system this program was developed on initialized all
   program storage to zero when loaded; contemporary systems do not, generally,
   do this.  Consequently, explicitly zeroed variables and arrays that assume a
-  zero initial value: SETUP, KEY, DSEEN, DLOC, ODLOC.  Also set unitialized
+  zero initial value: SETUP, KEY, DSEEN, DLOC, ODLOC.  Also set uninitialized
   values of DTRAV array to zero.
 
 - Changed all TYPE commands to PRINT and ACCEPT commands to READ.
